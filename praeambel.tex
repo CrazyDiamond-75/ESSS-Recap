@@ -28,15 +28,6 @@
 % For tests
 \usepackage{lipsum}
 
-% FONT CONFIGURATION %
-\usepackage[T1]{fontec}
-%\usepackage{crimson}
-% Updated version of Crimson Text
-\usepackage{cochineal}
-\usepackage[cochineal]{newtxmath} % To use Cochineal as a Math Font
-\usepackage{fontspec}
-\setmonofont{Cascadia Code}[Scale=0.8, Contextuals=WordInitial, Ligatures=TeX]
-
 % Definition environments
 \usepackage{amsthm}
 \theoremstyle{definition}
@@ -44,6 +35,15 @@
 % Configure reference name
 \usepackage[nameinlink]{cleveref}
 \crefname{definition}{Definition}{Definitions}
+
+% FONT CONFIGURATION %
+\usepackage{fontspec}
+
+% Updated version of Crimson Text
+\setmainfont{Cochineal}
+\setmonofont{Cascadia Code}[Scale=0.8]
+\usepackage[cochineal]{newtxmath} % To use Cochineal as a Math Font
+
 
 % MAKE DESCRIPTION ENVIRONMENTS HAVE ITALICIZED ITEMS %
 \renewcommand{\descriptionlabel}[1]{\hspace{\labelsep}\textit{#1}}
