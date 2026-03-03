@@ -28,21 +28,32 @@
 % For tests
 \usepackage{lipsum}
 
-% Definition environments
+
+%%% ENVIRONMENTS %%%
 \usepackage{amsthm}
+\usepackage[nameinlink]{cleveref}
+
+% Definition environment
 \theoremstyle{definition}
 \newtheorem{definition}{Definition}[section]
 % Configure reference name
-\usepackage[nameinlink]{cleveref}
 \crefname{definition}{Definition}{Definitions}
 
-% FONT CONFIGURATION %
+% Problem environment
+\theoremstyle{plain}
+\newtheorem{problem}{Problem}%[section]
+% Configure reference name
+\crefname{problem}{Problem}{Problems}
+%%%
+
+%%% FONT CONFIGURATION %%%
 \usepackage{fontspec}
 
 % Updated version of Crimson Text
 \setmainfont{Cochineal}
 \setmonofont{Cascadia Code}[Scale=0.8]
 \usepackage[cochineal]{newtxmath} % To use Cochineal as a Math Font
+%%%
 
 
 % MAKE DESCRIPTION ENVIRONMENTS HAVE ITALICIZED ITEMS %
