@@ -44,6 +44,12 @@
 \newtheorem{problem}{Problem}%[section]
 % Configure reference name
 \crefname{problem}{Problem}{Problems}
+
+% Algorithm environment
+\theoremstyle{definition}
+\newtheorem{algorithm}{Algorithm}%[section]
+% Configure reference name
+\crefname{algorithm}{Algorithm}{Algorithms}
 %%%
 
 %%% FONT CONFIGURATION %%%
@@ -120,25 +126,6 @@
     keywordstyle={\ttfamily\bfseries},   % emphasis style for the keywords,
     texcl=true,
     mathescape=true
-}
-
-\lstdefinestyle{bnf}{
-    basicstyle=\ttfamily\footnotesize,  % the size of the fonts that are used for the code
-    breakatwhitespace=false,            % sets if automatic breaks should only happen at whitespace
-    breaklines=true,                    % sets automatic line breaking
-    frame=leftline,
-    keepspaces=true,                    % keeps spaces in text, useful for keeping indentation of code (possibly needs columns=flexible)
-    numbers=left,                       % where to put the line-numbers; possible values are (none, left, right)
-    firstnumber=0,
-    numbersep=5pt,                      % how far the line-numbers are from the code
-    showspaces=false,                   % show spaces everywhere adding particular underscores; it overrides 'showstringspaces'
-    showstringspaces=false,             % underline spaces within strings only
-    showtabs=false,                     % show tabs within strings adding particular underscores
-    tabsize=2,                          % sets default tabsize to 4 spaces
-    commentstyle=\ttfamily\itshape,
-    emphstyle={\sffamily\bfseries},
-    keywordstyle={\ttfamily\bfseries},   % emphasis style for the keywords,
-    texcl=true
 }
 
 \lstset{style=pseudo}

@@ -43,7 +43,7 @@ First and foremost, we define the cryptographic primitives and basic operations.
     Lastly, we assume, that we can generate perfectly random numbers or messages we call nonces, typically denoted by \(N\).
 \end{definition}
 
-\subsection{Formal Protocol Model}
+\section{Formal Protocol Model}
 Because we have difficulties when talking about security in an ambiguous model, we have to define a formal model to represent protocols, before defining what security even means.
 
 In the context of this lecture, a formal model must support the following features:
@@ -139,3 +139,76 @@ It turns out, DERIVE is decidable in polynomial time using a fixed-point algorit
 The algorithm finds a shortest derivation of \(t\) iff \(t \in \DY(S)\).
 This restricts the search space by using \emph{composition} and \emph{decomposition} rules which allow to derive to and from some term.
 
+\begin{definition}[Composition and Decomposition Rules]
+    For some term \(m \in \T\), we define composition and decomposition rules as functions, that describe how \(m\) can be decomposed or composed---what to derive to with \(m\) and how to derive to \(m\).
+
+    We denote decomposition and composition rules as \(L_d(m), L_c(m) : R \rightarrow O\), where \(R, O \subseteq \T\) are the required and obtained terms.
+    This is also often written without set brackets, e.g., \(L_c([a,b]) : a,b \rightarrow [a,b]\).
+    
+    A whole derivation \(D(m)\) of a message \(m\) from \(S \subseteq \T\) is written as a chain of derivation rules, e.g.,
+    \[S = S_0 \rightarrow_{L_0} \rightarrow S_1 \rightarrow_{L_1} \dots \rightarrow S_{n-1} \rightarrow_{L_{n-1}} \rightarrow S_n \ni m.\]
+\end{definition}
+
+The success in this notation lies in the fact, that any required non-atomic terms are always direct subterms of the term the rule is applied on/to.
+More formally,
+\begin{IEEEeqnarray*}{r'c'l}
+    L_x(t) : R \rightarrow O & \Rightarrow & R \setminus \T_{\text{at}} \subseteq \{t\} \cup \Sub^1(t)
+\end{IEEEeqnarray*}
+Composition rules have exactly the terms of \(\Sub^1(m)\) as required terms.
+Decomposition rules obtain only terms from \(\Sub^1(m)\).
+
+To reduce the search space even further, we can look at the properties of some shortest derivation \(D_S(m)\) of \(m \in \T\).
+\begin{IEEEeqnarray*}{r'c'l}
+    L_d(t) \in D_S(m) & \Rightarrow & t \in \Sub(S) \\
+    L_c(t) \in D_S(m) & \Rightarrow & t \in \Sub(S \cup \{m\})
+\end{IEEEeqnarray*}
+To derive \(m\) from \(S\), we only need decompositions of subterms from \(S\) or compositions of subterms of \(S\) or subterms of \(m\).
+
+From these rules, we find the following fixed-point algorithm to solve DERIVE in polynomial time.
+
+\pagebreak % FIXME: Remove when some text is added to the current page.
+
+\begin{algorithm}[Algorithm for DERIVE] \hfill
+\begin{lstlisting}
+def derive($S$, $m$):
+    $S_{\text{old}} = \emptyset$
+    while $S_{\text{old}} \ne S$ do
+        $S_{\text{old}} = S$
+        if $\exists t \in \Sub(S \cup \{m\}) \setminus S, S \rightarrow S \cup \{t\}$ then
+            $S = S \cup \{t\}$
+        fi
+    od
+    if $m \in S$ then
+        accept
+    else
+        reject
+    fi
+\end{lstlisting}
+\end{algorithm}
+
+\subsection{Formal Protocol Model: Specification}
+Now we have all important steps to compose a formally sound protocol model.
+We write a protocol as a set of expected and responded messages.
+
+\begin{definition}[Receive/Send Action]
+    We define a receive/send (r/s) action as some pair \((r, s) \in \T^2\) which we write \(r \rightarrow s\).
+\end{definition}
+
+Currently, we still have some problems, because a protocol should be independent of its participants and needs features not yet implemented.
+For example, a protocol with some action \(\enca_{k_B}(A, x) \rightarrow \enca_{k_A}(x, N_B)\) assumes, that we have some way to handle variables, in this case \(x\), and hard codes some recognition of key and nonce origin.
+
+To fix these issues, we introduce \emph{substitutions}.
+
+\begin{definition}[Substitutions]
+    Substitutions are functions \(\sigma : \V \rightarrow \T\) with \(\exists^{<\infty} x : \sigma(x) \ne x\).
+    A substitution \(\sigma\) is called \emph{ground substitution}, if \(\forall x \in \V, \sigma(x) \ne x: \sigma(x) \text{ is message}\).
+
+    We interpret a situation \(\sigma(x) = x\) as the case, that \(x\) is uninitialized.
+    Else, we evaluate inductively for arbitrary terms\footnote{\(\T_{\text{nat}}\) is supposed to be \(\T \setminus \T_{\text{at}}\), aka., non-atomic terms.}.
+    \begin{IEEEeqnarray*}{l"r'c'l}
+        \text{IB: } x \in \V              & \sigma(x) & & \text{ is already defined} \\
+        \text{IS: } x \in \T_{\text{nat}} \setminus \V & \sigma(f(t_1, \dots, t_n)) & := & f(\sigma(t_1), \dots, \sigma(t_n))
+    \end{IEEEeqnarray*}
+\end{definition}
+
+Putting this together, we can model a protocol step, as a substitution state \(\sigma\), next r/s action, incoming message \(m\), updated substitution \(\sigma \mapsto \sigma'\), and reply message \(m'\).
