@@ -232,7 +232,7 @@ Now we have all important steps to compose a formally sound protocol model.
     A protocol consists of a finite number of instances \(\I_0, \dots, \I_{m-1}\) and a finite set \(I \subseteq \T\) of messages, which models the initial adversary knowledge.
 \end{definition}
 
-\subsubsection{Needham-Schroeder Protocol}
+\subsubsection{Needham-Schroeder Protocol}\label{sub:needham-schroeder}
 Using these definitions we can now finally define the Needham-Schroeder protocol using our formal notation.
 \begin{IEEEeqnarray*}{r'c'l}
     \I_0 & & \text{Client (Alice)} \\
@@ -257,8 +257,34 @@ Additionally, the adversary must be able to control the scheduling, which is not
 
 \begin{definition}[Execution Order]
     For protocol \(P := (\{\I_0, \dots, \I_{n-1}\}, I)\), we say each instance \(I_\cdot\) has \(|I_\cdot|\) steps.
-    An \emph{execution order} for \(P\) is a sequence\footnote{In this lecture we define \([n]\) as \(\{0, \dots, n-1\}\)} \(o \subseteq [n]\) such that each \(j \in [n]\) appears at most \(|I_j|\) times.
+    An \emph{execution order} for \(P\) is a sequence\footnote{In this lecture we define \([n]\) as \(\{0, \dots, n-1\}\)} \(o \in [n]^+\) such that each \(j \in [n]\) appears at most \(|I_j|\) times.
     We denotate \(o(t)\) as the \(t\)-th element in \(o\) and \(\#o(t) := |\{l \mid l < t \wedge o(l) = o (t)\}|\).
 
-    % TODO: Elaborate upon this further and explain the reasoning behind this notation.
+    \(o(t)\) can be seen as the current instance that gets \emph{handled}, which makes \(o\) itself a sequence of instance steps.
+    Therefore for some timestamp \(t\), \(\#o(t)\) is the current state of the referenced instance.
 \end{definition}
+
+\begin{definition}[Protocol Run / Attack]
+    For protocol \(P := (\{\I_0, \dots, \I_{n-1}\}, I)\) and all \(i\)-th rules of the \(j\)-th instance \(\I_j\) being named\footnote{We will reuse this notation.} \(r_i^j \rightarrow s_i^j\), we define a \emph{protocol run} of \(P\) or \emph{attack} as an execution order \(o\), and a substitution \(\sigma\), such that
+    \[\forall t \in [|o|] : \sigma(r_{\#o(t)}^{o(t)}) \in \DY\left(I \cup \left\{\sigma(s_{\#o(l)}^{o(l)}) \mid l \in [t]\right\}\right).\]
+    In layman's terms, the substitution is defined such, that the values it can know from the received terms are derivable from previous send terms and the initial adversary knowledge.
+    This is really practical, as the adversary knows every message that is send and received.
+\end{definition}
+
+Now we still need to define, what a \emph{successful} attack is, which is dependant on the definition of security, which is appropriate to the relevant context.
+As we discuss the security of protocols, we use the following definition.
+
+\newcommand{\fail}{\texttt{FAIL}}
+\newcommand{\brea}{\texttt{BREAK}}
+
+\begin{definition}[Successful Attack]
+    We call an attack on some protocol \(P\) successful, if
+    \[\fail \in \DY\left(I \cup \left\{\sigma(s_{\#o(l)}^{o(l)}) \mid l \in [|o|]\right\}\right).\]
+\end{definition}
+
+Now we can just introduce some r/s actions which receives a pair of the \(\brea\) symbol with some hopefully underivable message, which sends \(\fail\) on response.
+
+We can thus extend the protocol definition in \autoref{sub:needham-schroeder} with the following r/s action for Bob, to model the security.
+\begin{IEEEeqnarray*}{r'c'l}
+    {[\brea, N_B]} & \rightarrow & \fail
+\end{IEEEeqnarray*}
