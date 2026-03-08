@@ -124,8 +124,10 @@ Intuitively, we define the \emph{derivability} of some message as the \emph{Dole
 
 Now, as seen pretty quickly, the Dolev-Yao closure is always infinite, therefore we can not compute it, but we can go around this problem by handling it as a decision problem.
 
+\newcommand{\Derive}{\textsf{DERIVE}}
+
 \begin{problem}[Derivation of a Term]\label{prob:derive}
-    The DERIVE problem has the input \(S \subseteq \T, m \in \T\) and answers if \(m \in \DY(S)\) or not.
+    The \(\Derive\) problem has the input \(S \subseteq \T, m \in \T\) and answers if \(m \in \DY(S)\) or not.
     \iffalse
     \begin{IEEEeqnarray*}{l'l}
         \textit{Problem}    & \text{DERIVE} \\
@@ -135,7 +137,7 @@ Now, as seen pretty quickly, the Dolev-Yao closure is always infinite, therefore
     \fi
 \end{problem}
 
-It turns out, DERIVE is decidable in polynomial time using a fixed-point algorithm.
+It turns out, \(\Derive\) is decidable in polynomial time using a fixed-point algorithm.
 The algorithm finds a shortest derivation of \(t\) iff \(t \in \DY(S)\).
 This restricts the search space by using \emph{composition} and \emph{decomposition} rules which allow to derive to and from some term.
 
@@ -164,11 +166,11 @@ To reduce the search space even further, we can look at the properties of some s
 \end{IEEEeqnarray*}
 To derive \(m\) from \(S\), we only need decompositions of subterms from \(S\) or compositions of subterms of \(S\) or subterms of \(m\).
 
-From these rules, we find the following fixed-point algorithm to solve DERIVE in polynomial time.
+From these rules, we find the following fixed-point algorithm to solve \(\Derive\) (\cref{prob:derive}) in polynomial time.
 
 \pagebreak % FIXME: Remove when some text is added to the current page.
 
-\begin{algorithm}[Algorithm for DERIVE] \hfill
+\begin{algorithm}[Algorithm for \(\Derive\)] \hfill
 \begin{lstlisting}
 def derive($S$, $m$):
     $S_{\text{old}} = \emptyset$
@@ -288,3 +290,22 @@ We can thus extend the protocol definition in \autoref{sub:needham-schroeder} wi
 \begin{IEEEeqnarray*}{r'c'l}
     {[\brea, N_B]} & \rightarrow & \fail
 \end{IEEEeqnarray*}
+
+Currently, the model is still incomplete, as we still need to implement some things.
+For example, we want to keep partners flexible, e.g., allowing \(A \rightarrow C\) and \(A \rightarrow B\) in the same definition.
+We also want to allow multiple sessions of the protocol to be able to be simulated at the same time, which currently is not possible.
+We will fix both these problems on the way.
+
+\section{Rusinowitch-Turuani Theorem}
+Our end goal is the automatic analysis of protocols.
+By this definition, this means solving \cref{prob:insecure}.
+
+\newcommand{\Insecure}{\textsf{INSECURE}}
+\begin{problem}[Security of a Protocol]\label{prob:insecure}
+    The \(\Insecure\) problem has input protocol \(P\) and decides if there is a successful attack on \(P\) or not.
+\end{problem}
+
+\newcommand{\NP}{\textsf{NP}}
+
+The way \(\Insecure\) is defined, we quickly run into undecidability for more complicated contexts, but the problem is in fact decidable and \(\NP\)-complete.
+The proof of this is the main goal of this section.
