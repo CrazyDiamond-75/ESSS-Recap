@@ -307,5 +307,55 @@ By this definition, this means solving \cref{prob:insecure}.
 
 \newcommand{\NP}{\textsf{NP}}
 
-The way \(\Insecure\) is defined, we quickly run into undecidability for more complicated contexts, but the problem is in fact decidable and \(\NP\)-complete.
-The proof of this is the main goal of this section.
+The way \(\Insecure\) is defined, we quickly run into undecidability for more complicated contexts, but the problem is in fact decidable and \(\NP\)-complete for finite sessions.
+The proof of this, the Rusinowitch-Turuani Theorem, is the main goal of this section.
+
+\begin{theorem}[Rusinowitch-Turuani]\label{the:rutu}
+    \(\Insecure\) is \(\NP\)-complete.
+\end{theorem}
+
+\subsection{Using Directed Acyclic Graphs to Model Terms}
+
+As some attacks may be exponential in length, we have to shorten the representation of terms and attacks to consider \(\NP\) completeness.
+Therefore we redefine terms as DAGs.
+
+\newcommand{\DAG}{\textsf{DAG}}
+
+\begin{definition}[Terms as DAGs]
+    For some \(S \subseteq \T\), we define the \emph{DAG representation} of \(S\) as an edge-labeled graph \(G := (V, E)\) with
+    \begin{IEEEeqnarray*}{r'c'l}
+        V & := & \Sub(S) \\
+        E & := & \left\{v_s \overset{\text{left}}{\rightarrow} v_e \in V^2 \mid \exists b \in \T: v_s \in \left\{[v_e, b], \encs_{v_e}(b), \enca_{v_e}(b)\right\}\right\} \\
+        & \cup & \left\{v_s \overset{\text{right}}{\rightarrow} v_e \in V^2 \mid \exists b \in \T: v_s \in \left\{[b, v_e], \encs_{b}(v_e), \enca_{b}(v_e)\right\}\right\}
+    \end{IEEEeqnarray*}
+    Moreover, we define \(|S|_\DAG := |V|\).
+\end{definition}
+
+The idea of this definition is to show, that if there exists some attack on a protocol \(P\), then there exists an attack \((o, \sigma)\), such that
+\[\exists n \in \N : P \mapsto |\{\sigma(x) \mid x \in \V(P)\}|_\DAG \in \mathcal O(P \mapsto |P|^n).\]
+We need this, in order to prove \cref{the:rutu}, as the solution substitution \(\sigma\) must not be larger than a polynomial dependant on \(|P|\).
+Else, a solution can not be verified in polynomial time, making the problem too hard for \(\NP\)-completeness.
+
+\begin{definition}[Notations for DAG Representations of Terms]
+    For \(S \subseteq \T\) and substitution \(\sigma\), we write \(S\sigma := \{\sigma(t) \mid t \in S\}\).
+    Additionally, for \(t \in \T, x \in \V\), we write \([x \leftarrow t]\) as substitution with \(x \mapsto t\) and \(y \ne x \Rightarrow y \mapsto y\).
+\end{definition}
+
+We need these notations, as thus we see, that for \(S \subseteq \T, x \in \V, t\) message, we have
+\[|S[x \leftarrow t]_\DAG| \le |S \cup \{t\}|_\DAG.\]
+In other words, applying \(x \leftarrow t\) on an arbitrary amount of variables in \(S\) is not more expensive than adding \(t\) directly to \(S\).
+
+A corollary of this is, that for \(S \subseteq \T\) and \(\sigma\) a ground substitution on \(x_1, \dots, x_k \in \V\), we have
+\[|S\sigma|_\DAG \le |S \cup \{\sigma(x_1), \dots, \sigma(x_k)\}|_\DAG.\]
+Simply, we can substitute to compress the DAG of \(S\) further.
+
+\subsection{Short Attacks}
+As mentioned, we want to show, that for each successful attack, there is a short representation of it, for that we first have to define, what we even consider the size of an attack.
+
+\begin{definition}[Size of an Attack]
+    For an attack \((o, \sigma)\) on a protocol \(P\), we define the size \(|\sigma|\) of the attack as \(\sum_{x \in \V(P)}|\{\sigma(x)\}|_\DAG\).
+
+    A minimal attack is subsequently defined as an attack, with no smaller attack possible.
+\end{definition}
+
+In most cases we have \(|\{\sigma(\cdot)\}|_\DAG = 1\), as often \(\sigma(\cdot)\) is atomic and thus has no non-trivial subterms.

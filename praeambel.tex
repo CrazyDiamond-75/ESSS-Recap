@@ -28,7 +28,6 @@
 % For tests
 \usepackage{lipsum}
 
-
 %%% ENVIRONMENTS %%%
 \usepackage{amsthm}
 \usepackage[nameinlink]{cleveref}
@@ -39,17 +38,17 @@
 % Configure reference name
 \crefname{definition}{Definition}{Definitions}
 
-% Problem environment
 \theoremstyle{plain}
 \newtheorem{problem}{Problem}%[section]
-% Configure reference name
 \crefname{problem}{Problem}{Problems}
 
-% Algorithm environment
 \theoremstyle{definition}
 \newtheorem{algorithm}{Algorithm}%[section]
-% Configure reference name
 \crefname{algorithm}{Algorithm}{Algorithms}
+
+\theoremstyle{theorem}
+\newtheorem{theorem}{Theorem}%[section]
+\crefname{theorem}{Theorem}{Theorems}
 %%%
 
 %%% FONT CONFIGURATION %%%
@@ -60,7 +59,6 @@
 \setmonofont{Cascadia Code}[Scale=0.8]
 \usepackage[cochineal]{newtxmath} % To use Cochineal as a Math Font
 %%%
-
 
 % MAKE DESCRIPTION ENVIRONMENTS HAVE ITALICIZED ITEMS %
 \renewcommand{\descriptionlabel}[1]{\hspace{\labelsep}\textit{#1}}
@@ -78,24 +76,24 @@
 % for a funny ¯\_(ツ)_/¯-Emoji
 \newcommand{\shrug}[1][]{%
     \begin{tikzpicture}[baseline,x=0.8\ht\strutbox,y=0.8\ht\strutbox,line width=0.125ex,#1]
-    \def\arm{(-2.5,0.95) to (-2,0.95) (-1.9,1) to (-1.5,0) (-1.35,0) to (-0.8,0)};
-    \draw \arm;
-    \draw[xscale=-1] \arm;
-    \def\headpart{(0.6,0) arc[start angle=-40, end angle=40,x radius=0.6,y radius=0.8]};
-    \draw \headpart;
-    \draw[xscale=-1] \headpart;
-    \def\eye{(-0.075,0.15) .. controls (0.02,0) .. (0.075,-0.15)};
-    \draw[shift={(-0.3,0.8)}] \eye;
-    \draw[shift={(0,0.85)}] \eye;
-    % draw mouth
-    \draw (-0.1,0.2) to [out=15,in=-100] (0.4,0.95); 
+        \def\arm{(-2.5,0.95) to (-2,0.95) (-1.9,1) to (-1.5,0) (-1.35,0) to (-0.8,0)};
+        \draw \arm;
+        \draw[xscale=-1] \arm;
+        \def\headpart{(0.6,0) arc[start angle=-40, end angle=40,x radius=0.6,y radius=0.8]};
+        \draw \headpart;
+        \draw[xscale=-1] \headpart;
+        \def\eye{(-0.075,0.15) .. controls (0.02,0) .. (0.075,-0.15)};
+        \draw[shift={(-0.3,0.8)}] \eye;
+        \draw[shift={(0,0.85)}] \eye;
+        % draw mouth
+        \draw (-0.1,0.2) to [out=15,in=-100] (0.4,0.95);
     \end{tikzpicture}
 }
 \newcommand{\splitpage}[2]{
     \begin{minipage}{0.5\textwidth}
         #1
     \end{minipage}
-        \hspace{0.5cm}
+    \hspace{0.5cm}
     \begin{minipage}{0.5\textwidth}
         #2
     \end{minipage}
@@ -104,7 +102,6 @@
 % BASIC CONFIGURATION %
 \pagestyle{plain}
 \allowdisplaybreaks
-
 
 \lstdefinestyle{pseudo}{
     language=python,
@@ -121,7 +118,7 @@
     showtabs=false,                     % show tabs within strings adding particular underscores
     tabsize=2,                          % sets default tabsize to 4 spaces
     commentstyle=\ttfamily\itshape,
-    emph={*, do, od, for, if, fi, then, else, to, def, in, forall, exists, while}, 
+    emph={*, do, od, for, if, fi, then, else, to, def, in, forall, exists, while},
     emphstyle={\sffamily\bfseries},
     keywordstyle={\ttfamily\bfseries},   % emphasis style for the keywords,
     texcl=true,
@@ -129,4 +126,3 @@
 }
 
 \lstset{style=pseudo}
-
