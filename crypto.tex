@@ -358,4 +358,15 @@ As mentioned, we want to show, that for each successful attack, there is a short
     A minimal attack is subsequently defined as an attack, with no smaller attack possible.
 \end{definition}
 
-In most cases we have \(|\{\sigma(\cdot)\}|_\DAG = 1\), as often \(\sigma(\cdot)\) is atomic and thus has no non-trivial subterms.
+In most cases we have\footnote{We write \(|\sigma(\cdot)|_\DAG\) for \(|\{\sigma(\cdot)\}|_\DAG\).} \(|\sigma(\cdot)|_\DAG = 1\), as often \(\sigma(\cdot)\) is atomic and thus has no non-trivial subterms.
+
+By the parsing lemma, if \((o, \sigma)\) is a minimal successful attack on \(P\), and there is some variable \(x\) with \(|\sigma(x)|_\DAG > 1\), there is some term \(t\) with\footnote{\(\T(P)\) is the set containing all terms of each r/s action in \(P\).}
+\begin{IEEEeqnarray*}{l}
+    t \in \Sub(\T(P)) \\
+    t \not\in \V \\
+    \sigma(t) = \sigma(x)
+\end{IEEEeqnarray*}
+In other words, complex terms mapped from variables always match with terms in the protocol.
+Each term the attacker assigns to a variable is already present in the protocol.
+
+The proof of the parsing lemma is available on \url{https://cloud.rz.uni-kiel.de/index.php/s/3osFeYcC6NwRMij?dir=/&editing=false&openfile=true}.
