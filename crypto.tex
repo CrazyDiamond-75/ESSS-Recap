@@ -342,7 +342,7 @@ Else, a solution can not be verified in polynomial time, making the problem too 
 \end{definition}
 
 We need these notations, as thus we see, that for \(S \subseteq \T, x \in \V, t\) message, we have
-\[|S[x \leftarrow t]_\DAG| \le |S \cup \{t\}|_\DAG.\]
+\[|S[x \leftarrow t]|_\DAG \le |S \cup \{t\}|_\DAG.\]
 In other words, applying \(x \leftarrow t\) on an arbitrary amount of variables in \(S\) is not more expensive than adding \(t\) directly to \(S\).
 
 A corollary of this is, that for \(S \subseteq \T\) and \(\sigma\) a ground substitution on \(x_1, \dots, x_k \in \V\), we have
@@ -370,3 +370,12 @@ In other words, complex terms mapped from variables always match with terms in t
 Each term the attacker assigns to a variable is already present in the protocol.
 
 The proof of the parsing lemma is available on \url{https://cloud.rz.uni-kiel.de/index.php/s/3osFeYcC6NwRMij?dir=/&editing=false&openfile=true}.
+
+Finally, we can prove, that we can represent an attack \((o, \sigma)\) on \(P\) in polynomial space, as we can show, that
+\[\forall x \in \V : |\sigma(x)|_\DAG \le |\T(P)|_\DAG.\]
+Therefore, to prove \autoref{the:rutu}, we only need to show, that \(\Insecure\) is \(\NP\)-hard.
+Thus, we need to prove, that there is a polynomial reduction from another \(\NP\)-hard problem to \(\Insecure\).
+
+\newcommand{\TSat}{\textsf{3-SAT}}
+
+The lecture shows this by reducing \(\TSat \le_p \Insecure\).
