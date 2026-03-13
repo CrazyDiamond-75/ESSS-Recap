@@ -379,3 +379,45 @@ Thus, we need to prove, that there is a polynomial reduction from another \(\NP\
 \newcommand{\TSat}{\textsf{3-SAT}}
 
 The lecture shows this by reducing \(\TSat \le_p \Insecure\).
+\(\TSat\) is defined\footnote{Hint: I redefined the problem in a way that feels more familiar to the notation used in the lecture.} in \cref{prob:3Sat}.
+
+\newcommand{\true}{\texttt{true}}
+\newcommand{\false}{\texttt{false}}
+
+\begin{problem}[\TSat]\label{prob:3Sat}
+    The \(\TSat\) problem has input formula \(\phi := \bigwedge_{i \in [n]}(l_1^i \vee l_2^i \vee l_3^i)\) for literals\footnote{\(r_{i,j}\) is the index of \(x\) that \(l_j^i\) is based on.} \(l_j^i \in \{x_{r_{i,j}}, \overline x_{r_{i,j}}\}\) for \(x_{r_{i,j}} \in \V\).
+    The problem decides if \(\phi\) is satisfiable, i.e., there exists a substitution \(\sigma : \V \rightarrow \{\true, \false\}\), such that \(\phi \sigma \rightarrow \true\).
+\end{problem}
+
+The reduction works by constructing a protocol \(P\) from formula \(\phi\) in the following way.
+We create an instance \(A\), which receives an assignment \(I\) from the adversary and distributes across all \(B_j\) instances using symmetric encryption.
+Each \(B_j\) now corresponds to \(l_j^1 \vee l_j^2 \vee l_j^3\) and sends \(k_i\) to \(C\), if the literal is satisfiable using \(I\).
+There are 7 instances in each \(B_j\), as for three literals, there are 7 possible instances, which satisfy the sentence.
+Finally, \(C\) sends \(\fail\), if it receives \(k_1, \dots, k_n\).
+The initial adversary knowledge is \(\{\true, \false\}\).
+
+Computing \(P\) from \(\phi\) is obviously possible in polynomial time, and correctly accepts and rejects \(\phi\).
+Therefore, \(\Insecure\) is \(\NP\)-hard and thus \(\NP\)-complete.
+
+\section{Automatic Analysis}
+As mentioned, the goal of this chapter is the automatic analysis of security protocols.
+We quickly run into undecidability if we try to expand our formal model.
+E.g., allowing multiple and parallel sessions, makes \(\Insecure\) undecidable.
+
+We also still have to handle, how the adversary controls the routing of messages and who chooses to initialize with whom.
+
+We define a version of \(\Insecure\), which allows parallel sessions in \cref{prob:uninsecure}.
+
+\newcommand{\UnInsecure}{\textsf{UNBOUNDED-INSECURE}}
+
+\begin{problem}[Security of an Unbound Protocol]\label{prob:uninsecure}
+    The \(\UnInsecure\) problem has input protocol \(P\) and decides, if there is an insecure protocol based\footnote{In a way such that we only allow extensions of the protocol by copying instances and changing identities.} on \(P\).
+\end{problem}
+
+\begin{theorem}[Undecidability of Unrestricted Protocols]\label{the:uninsecure}
+    \(\UnInsecure\) is undecidable.
+\end{theorem}
+
+\newcommand{\PCP}{\textsf{PCP}}
+
+We show \cref{the:uninsecure} by reducing \(\PCP \le \UnInsecure\).
