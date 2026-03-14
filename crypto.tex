@@ -373,7 +373,7 @@ The proof of the parsing lemma is available on \url{https://cloud.rz.uni-kiel.de
 
 Finally, we can prove, that we can represent an attack \((o, \sigma)\) on \(P\) in polynomial space, as we can show, that
 \[\forall x \in \V : |\sigma(x)|_\DAG \le |\T(P)|_\DAG.\]
-Therefore, to prove \autoref{the:rutu}, we only need to show, that \(\Insecure\) is \(\NP\)-hard.
+Therefore, to prove \cref{the:rutu}, we only need to show, that \(\Insecure\) is \(\NP\)-hard.
 Thus, we need to prove, that there is a polynomial reduction from another \(\NP\)-hard problem to \(\Insecure\).
 
 \newcommand{\TSat}{\textsf{3-SAT}}
@@ -421,3 +421,27 @@ We define a version of \(\Insecure\), which allows parallel sessions in \cref{pr
 \newcommand{\PCP}{\textsf{PCP}}
 
 We show \cref{the:uninsecure} by reducing \(\PCP \le \UnInsecure\).
+
+\newcommand{\0}{\texttt{0}}
+\newcommand{\1}{\texttt{1}}
+
+\begin{problem}[Post Correspondence Problem]\label{prob:pcp}
+    The \(\PCP\) problem has input two lists of words \(\alpha, \beta \in (\{\0, \1\}^+)^n\), and decides if there is a sequence \(I \in [n]^+\), such that \(\bigtimes_{i \in I}\alpha_i = \bigtimes_{i \in I}\beta_i\).
+\end{problem}
+
+\cref{prob:pcp} is undecidable, by reduction from the halting problem.
+If there is no solution for given \(\alpha\) and \(\beta\), an algorithm will not halt.
+
+\(\PCP \le \UnInsecure\) can be shown by constructing instances, which add words left or right to an intermediate solution using encryption.
+The attacker must find the correct execution order and right amount of instances, such that an entity receives encrypted \([x, x]\) and sends \(\fail\).
+
+A satisfying result from \cref{the:rutu,the:uninsecure} is, that while unbounded sessions are undecidable, a bounded number of sessions is decidable!
+Therefore, we can recursively enumerate all insecure protocols, as the problem is semi-decidable.
+An algorithm could e.g., search for an attack with sessions bounded to one, then two, three, etc.
+If the protocol is insecure, the algorithm \emph{will} terminate, even though, this may take a long time.
+If the protocol is secure, the algorithm will not terminate.
+
+This is still pretty unrealistic, as it is computationally expensive, as session count increases instance count and therefore input complexity.
+Therefore, we can use approximation algorithms.
+One idea is to over-estimate the attacker to reduce the problem space.
+This is the underlying thought in Horn Logic and the basis of \emph{ProVerif}.
