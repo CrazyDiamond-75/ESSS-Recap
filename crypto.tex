@@ -444,4 +444,51 @@ If the protocol is secure, the algorithm will not terminate.
 This is still pretty unrealistic, as it is computationally expensive, as session count increases instance count and therefore input complexity.
 Therefore, we can use approximation algorithms.
 One idea is to over-estimate the attacker to reduce the problem space.
-This is the underlying thought in Horn Logic and the basis of \emph{ProVerif}.
+Another idea is to model protocol properties in first-order Horn Logic.
+This is the underlying thought and the basis of \emph{ProVerif}.
+
+\begin{definition}[Horn Logic]
+    We redefine the protocol notation in Horn Logic.
+    The Dolev-Yao closure is defined as a one-dimensional relation \(d\) on \(\T\).
+    A term \(t \in \T\) is defined to be derivable iff \(d(t)\).
+    Therefore we have facts such as \(d(\hat k_C)\), as \(\hat k_C \in I\).
+
+    All rules for the DY closure are written as first-order expressions\footnote{The notation changes to be more familiar to traditional logic.}, e.g.,
+    \[\forall t : d(t) \rightarrow d(\hash(t)).\]
+
+    Security is equivalent to \(\neg d(\fail)\).
+\end{definition}
+
+The advantage of this notation is, that we can use logical rules between, e.g., literals \(x_1, \dots, x_n, y\), such as \((x_1 \wedge \dots \wedge x_n \rightarrow y) \leftrightarrow (\neg x_1 \vee \dots \vee x_n \vee y)\).
+
+\begin{definition}[Horn Translation of Protocol]
+    A protocol is written in Horn Logic by specifying rules for each instance in the original protocol.
+
+    For example, the Needham-Schoeder Protocol can be rewritten in the following way.
+    \begin{IEEEeqnarray*}{r"r'c'l}
+        A_1: & d(\epsilon) & \rightarrow & d(\enca_{k_C}(A, N_A)) \\
+        A_2: & \forall y: d(\enca_{k_A}(N_A, y)) & \rightarrow & d(\enca_{k_C}(y)) \\
+        B_1: & \forall x: d(\enca_{k_B}(A, x)) & \rightarrow & d(\enca_{k_A}(x, N_B)) \\
+        B_2: & d(\brea, N_B) & \rightarrow & d(\fail)
+    \end{IEEEeqnarray*}
+    Proving, that the Needham-Schoeder protocol is insecure can be done, be proving \(d(\fail)\) by using the rules and assuming \(d(\epsilon, k_A, k_B, k_C, \hat k_C, \brea, A, B, C)\).
+\end{definition}
+
+\begin{definition}[Horn Clauses and Formulas]
+    We define Horn clauses to be disjunctions of literals, of which there is at most one positive literal.
+    E.g., \(x_2\) or \(x_1 \vee \overline x_2 \vee \overline x_3\).
+    The latter is equivalent (\(\equiv\)) to \(x_2 \wedge x_3 \rightarrow x_1\).
+    We also have \(\overline x_1 \vee \overline x_2 \equiv \overline{x_1 \wedge x_2} \equiv x_1 \wedge x_2 \rightarrow \false\).
+
+    A Horn formula is a conjunction of Horn clauses.
+\end{definition}
+
+The idea is basically to write derivation steps and rules as Horn clauses and evaluate a horn formula.
+For this, the lecture additionally defines unifiers, resolvents, and resolutions, and states defines an algorithm to test a horn formula on satisfiability.
+Because this is not mentioned any further, and there are no proofs on the aforementioned theorem, this content is not included in this summary.
+
+\begin{center}
+    \todo[inline]{Maybe elaborate further.}
+\end{center}
+
+\subsection{ProVerif}
