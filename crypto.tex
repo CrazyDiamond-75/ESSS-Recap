@@ -491,4 +491,24 @@ Because this is not mentioned any further, and there are no proofs on the aforem
     \todo[inline]{Maybe elaborate further.}
 \end{center}
 
+\lstset{style=proverif}
+
 \subsection{ProVerif}
+ProVerif is a security analysis tool which can be used to prove different securities of protocols, even with unbounded protocol sessions, albeit non-deterministic.
+
+The following are some basic keywords and their semantics.
+
+\begin{lstlisting}
+# Free typed algebraic variables
+free var
+# Communication channel Type
+ch: channel
+# Data Type
+data: bitstring
+# Variable the adversary can not directly access.
+private
+# Security property
+query
+# Send on channel
+out
+\end{lstlisting}

@@ -103,26 +103,42 @@
 \pagestyle{plain}
 \allowdisplaybreaks
 
-\lstdefinestyle{pseudo}{
-    language=python,
-    basicstyle=\ttfamily\footnotesize,  % the size of the fonts that are used for the code
-    breakatwhitespace=false,            % sets if automatic breaks should only happen at whitespace
-    breaklines=true,                    % sets automatic line breaking
+% CODE %
+\definecolor{codepurple}{HTML}{7f0055}
+\definecolor{comment}{RGB}{0,128,0}
+\definecolor{number}{RGB}{9,136,90}
+\definecolor{string}{RGB}{163,21,21}
+
+% Things that are the same in all styles
+\lstdefinestyle{basic}{
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,
+    breaklines=true,
     frame=leftline,
-    keepspaces=true,                    % keeps spaces in text, useful for keeping indentation of code (possibly needs columns=flexible)
-    numbers=left,                       % where to put the line-numbers; possible values are (none, left, right)
+    keepspaces=true,
+    numbers=left,
     firstnumber=1,
-    numbersep=5pt,                      % how far the line-numbers are from the code
-    showspaces=false,                   % show spaces everywhere adding particular underscores; it overrides 'showstringspaces'
-    showstringspaces=false,             % underline spaces within strings only
-    showtabs=false,                     % show tabs within strings adding particular underscores
-    tabsize=2,                          % sets default tabsize to 4 spaces
-    commentstyle=\ttfamily\itshape,
-    emph={*, do, od, for, if, fi, then, else, to, def, in, forall, exists, while},
-    emphstyle={\sffamily\bfseries},
-    keywordstyle={\ttfamily\bfseries},   % emphasis style for the keywords,
+    numbersep=5pt,
+    showspaces=false,
+    showstringspaces=false,
+    showtabs=false,
+    tabsize=2,
+    commentstyle=\itshape\color{comment},
+    stringstyle=\color{string},
+    keywordstyle=\bfseries\color{codepurple},
     texcl=true,
     mathescape=true
+}
+
+\lstdefinestyle{pseudo}{
+    style=basic,
+    language=python,
+    morekeywords={do, od, for, if, fi, then, else, to, def, in, forall, exists, while, accept, reject},
+}
+
+\lstdefinestyle{proverif}{
+    style=basic,
+    morekeywords={free, channel, bitstring, private, query, out},
 }
 
 \lstset{style=pseudo}
