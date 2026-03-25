@@ -9,7 +9,7 @@ First and foremost, we define the cryptographic primitives and basic operations.
 \newcommand{\enca}{\texttt{enc}^\text{a}}
 \newcommand{\decs}{\texttt{dec}^\text{s}}
 \newcommand{\deca}{\texttt{dec}^\text{a}}
-\begin{definition}[Cryptographic Primitives: Encryption]
+\begin{definition}[Cryptographic Primitives: Encryption]\label{def:encryption}
     For \(X,Y,K \subseteq \Sigma^*\) for alphabet \(\Sigma\), we define the \emph{symmetric} encryption \(\encs : X \times K \rightarrow Y\) and decryption \(\decs : Y \times K \rightarrow X\) as some bijective functions with
     \[\decs_k \circ \encs_k = x \mapsto x.\]
     Furthermore, for \(\hat K \subseteq \Sigma^*\) and some bijective mapping to \(K\), we define the \emph{asymmetric} encryption \(\enca : X \times K \rightarrow Y\) and decryption \(\deca : Y \times \hat K \rightarrow X\) functions with property
@@ -487,10 +487,6 @@ The idea is basically to write derivation steps and rules as Horn clauses and ev
 For this, the lecture additionally defines unifiers, resolvents, and resolutions, and states defines an algorithm to test a horn formula on satisfiability.
 Because this is not mentioned any further, and there are no proofs on the aforementioned theorem, this content is not included in this summary.
 
-\begin{center}
-    \todo[inline]{Maybe elaborate further.}
-\end{center}
-
 \lstset{style=proverif}
 
 \subsection{ProVerif}
@@ -507,8 +503,72 @@ ch: channel
 data: bitstring
 # Variable the adversary can not directly access.
 private
-# Security property
+# Defines the security property.
 query
-# Send on channel
-out
 \end{lstlisting}
+
+A basic insecure handshake protocol can be specified in the following way.
+Some types used need to be defined with, e.g., \lstinline|type skey| for the private key.
+The functions for encryption and signing are also defined manually by introducing reduction rules.
+
+\begin{lstlisting}
+# Channel for $A$ and $B$.
+free c:channel
+
+# The attacker should not be able to derive $\fail$.
+free FAIL:bitstring [private]
+query attacker (FAIL)
+
+# Alice (Client)
+let clientA(pkA: pkey, skA:skey, pkB:spkey) =
+    # Send identifier and public key.
+    out (c, pkA)
+    # When some term is received,
+    in (c, x:bitstring)
+    # and we decrypt it with $A$'s key,
+    let y = adec(x, skA) in
+        # and we can verify, that we received $k_B, k$ by $B$,
+        let (=pkB, k:key) = checksign(y, pkB) in
+            # send $\fail$.
+            out (c, senc(FAIL, k))
+
+# Bob (Server)
+let serverB(pkB: spkey, skB: sskey) =
+    # When we receive some identifier and a public key,
+    in (c, pkX:pkey)
+    # generate a new key,
+    new k:key
+    # and send own public and new key, signed and encrypted for recipient.
+    out (c, aenc(sign((pkB, k), skB), pkX))
+    # If we receive some string we can not decrypt with k, ignore.
+    in (c, x:bitstring)
+    let z = sdec(x, k) in 0
+
+# Main process
+# Generate private and signing keys.
+new skA: skey
+new skB: sskey
+# Distribute derived public keys.
+let pkA = pk(skA) in out(c, pkA)
+let pkB = spk(skB) in out(c, pkB)
+
+# Run Alice's and Bob's procedures an unbounded number of sessions.
+( (!clientA(pkA, skA, pkB)) | (!serverB(pkB, skB)) )
+\end{lstlisting}
+
+As mentioned, we have to manually define, how the symmetric and asymmetric encryptions work.
+This is done in ProVerif by defining so-called \emph{equational theories}.
+
+\begin{definition}[Equational Theory]
+    In ProVerif we can define primitives, e.g, the symmetric encryption, very similar to how we defined them in \cref{def:encryption}.
+    \[\forall t \in T: \decs_k(\encs_k(x)) = x\]
+    This property is called an equational theory, a set of equational theories is often denoted as \(E\).
+
+    More formally, we define the relation \(\twoheadrightarrow_E\) between two terms, if the right term can be derived from the left term using a rule in \(E\).
+    The relation \(\twoheadrightarrow^*_E\) is the closure of \(\twoheadrightarrow_E\) under transitivity, reflexivity, and application of function symbols.
+    The relation \(\equiv_E\) is defined as the symmetric closure of \(\twoheadrightarrow^*_E\).
+
+    We define some derivation \(\twoheadrightarrow_E\) \emph{terminating}, iff there is no infinite sequence using rules in \(E\) and \emph{confluent}, iff there are multiple orders in which rules are used to derive some term.
+    A set of rules \(E\) is defined \emph{convergent}, iff \(\twoheadrightarrow_E\) is terminating and confluent.
+    \(E\) is a \emph{convergent subterm theory}, iff \(E\) is convergent and for all derivations, the right-hand side is a subterm of the left-hand side.
+\end{definition}
