@@ -491,6 +491,7 @@ Because this is not mentioned any further, and there are no proofs on the aforem
 
 \subsection{ProVerif}
 ProVerif is a security analysis tool which can be used to prove different securities of protocols, even with unbounded protocol sessions, albeit non-deterministic.
+The language has a strong type system.
 
 The following are some basic keywords and their semantics.
 
@@ -568,7 +569,40 @@ This is done in ProVerif by defining so-called \emph{equational theories}.
     The relation \(\twoheadrightarrow^*_E\) is the closure of \(\twoheadrightarrow_E\) under transitivity, reflexivity, and application of function symbols.
     The relation \(\equiv_E\) is defined as the symmetric closure of \(\twoheadrightarrow^*_E\).
 
-    We define some derivation \(\twoheadrightarrow_E\) \emph{terminating}, iff there is no infinite sequence using rules in \(E\) and \emph{confluent}, iff there are multiple orders in which rules are used to derive some term.
-    A set of rules \(E\) is defined \emph{convergent}, iff \(\twoheadrightarrow_E\) is terminating and confluent.
-    \(E\) is a \emph{convergent subterm theory}, iff \(E\) is convergent and for all derivations, the right-hand side is a subterm of the left-hand side.
+    We define some derivation \(\twoheadrightarrow_E\) \emph{terminating}, if there is no infinite sequence using rules in \(E\) and \emph{confluent}, if there are multiple orders in which rules are used to derive some term.
+    A set of rules \(E\) is defined \emph{convergent}, if \(\twoheadrightarrow_E\) is terminating and confluent.
+    \(E\) is a \emph{convergent subterm theory}, if \(E\) is convergent and for all derivations, the right-hand side is a subterm of the left-hand side.
+
+    Finally, we say a term \(t \in \T\) is in \(E\)\emph{-normal form}, if \(\forall t \twoheadrightarrow_E t': t = t'\), i.e., we can not simplify \(t\) further.
 \end{definition}
+
+\begin{theorem}[Algorithms for Convergent Equational Theories]\hfill
+    \begin{enumerate}
+        \item If a set \(E\) of rules is convergent, then for each \(t \in \T\) there exists a \([t] \in \T\), such that \([t]\) is in normal form and \(t \equiv_E [t]\).
+            We call \([t]\) the normal form of \(t\).
+
+        \item \(\forall t, t' \in \T: t \equiv_E t' \Leftrightarrow [t] = [t']\).
+
+        \item We can decide if \(t \equiv_E t'\) and build the DAG representation of \([t]\) in polynomial time.
+    \end{enumerate}
+\end{theorem}
+
+Realistically, for some two terms, that the adversary can not simplify, we would want them to look the same, i.e., random bits.
+We model this in the following way.
+
+\begin{definition}[Tests for Indistinguishability]
+    For adversary knowledge \(S \subseteq \T\), we define an \(S\)\emph{-test} as a pair \((M, M') \in \T^2\), such that \(M, M' \in \DY(S)\), and \(\exists^1 x \in \V: x \in M, M'\).
+
+    A message \(t\) \emph{satisfies} test \((M, M')\), if \(M[t/x] \equiv_E M'[t/x]\).
+    We call two messages \(S\)\emph{-indistinguishable} if there is no \(S\)-test satisfied by exactly one of them.
+\end{definition}
+
+By this definition, the adversary can distinguish \(\enca_k(\true)\) and \(\enca_k(\false)\).
+We can fix this, by introducing random nonces into our encryption primitives which are not known by the adversary.
+The decision problem that covers, if two messages are \(S\)-distinguishable, is decidable in polynomial time.
+
+This notion enhances our security definition based on \(\Insecure\) whether we can derive some secret to the question, if a secret can be guessed by distinguishability.
+We call this \emph{strong secrecy}, which is also covered by ProVerif.
+
+A different security measure regarding if our protocol is still secure in the future, when some private key will be calculated from the public key by the adversary, is known as \emph{forward secrecy}.
+It can also be modeled in ProVerif.
