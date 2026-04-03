@@ -4,3 +4,43 @@ This is the second part of the lecture, where we will define and discuss differe
 One example where security was violated by an information flow mess up was the \emph{Meltdown} attack, where CPU pipelining lead to a process gaining access to forbidden memory.
 In this example, the security policy is isolation between (unrelated) processes.
 Processes may communicate with the kernel, but not directly with each other, this was violated by the attack.
+
+\section{Formal Model}
+To formalize the idea, that information may only flow between allowed actors, we will have to go through some definitions.
+
+\begin{definition}[Security Policy]
+    For a set of security domains (agents) \(D\), a \emph{security policy} is a reflexive and often transitive relation \(\rightarrowtail \subseteq D^2\).
+    For domains \(L, H \in D\), we write \(L \rightarrowtail H\), that information may flow from \(L\) to \(H\).
+    Subsequently, \(L \not\rightarrowtail H\) describes, that information must not flow from \(L\) to \(H\).
+
+    A standard policy is \(\rightarrowtail = \{(L, H)\}\), written \(L \rightarrowtail H\), where we only allow information to flow from \(L\) to \(H\) but not the other way around.
+    This is named the \(H/L\) policy.
+\end{definition}
+
+\newcommand{\step}{\texttt{step}}
+\newcommand{\obs}{\texttt{obs}}
+\newcommand{\dom}{\texttt{dom}}
+
+\begin{definition}[System]
+    We model a system used by agents as a state machine automata.
+    Transitions model different actions agents can take.
+
+    A system is a tuple \((S, s_0, A, \step, D, O, \obs, \dom)\), where
+    \begin{IEEEeqnarray*}{r'c'l}
+        S                                & \hat = & \text{Set of states} \\
+        s_0 \in S                        & \hat = & \text{Initial state} \\
+        A                                & \hat = & \text{Set of actions} \\
+        \step : S \times A \rightarrow S & \hat = & \text{Step function} \\
+        D                                & \hat = & \text{Set of agents/security domains} \\
+        O                                & \hat = & \text{Set of possible observations} \\
+        \obs : S \times D \rightarrow O  & \hat = & \text{Observation function} \\
+        \dom : A \rightarrow D           & \hat = & \text{Domain function}
+    \end{IEEEeqnarray*}
+
+    For actor \(L\) and state \(s\), we define \(\obs_L(s)\) as the observation of \(L\) in \(s\), i.e., the information \(L\) can derive from \(s\).
+
+    For state \(s \in S\) and sequence of actions \(\alpha \in A^*\), we define \(s \cdot \alpha\) as the state obtained by performing all actions in \(\alpha\).
+\end{definition}
+
+\subsection{Security Models}
+There are different notions of how to define security in the information flow context, the lecture discusses \emph{P-security}, \emph{IP-security}, and \emph{TA-security}.
