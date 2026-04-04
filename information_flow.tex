@@ -42,5 +42,34 @@ To formalize the idea, that information may only flow between allowed actors, we
     For state \(s \in S\) and sequence of actions \(\alpha \in A^*\), we define \(s \cdot \alpha\) as the state obtained by performing all actions in \(\alpha\).
 \end{definition}
 
-\subsection{Security Models}
+\section{Security Models}
 There are different notions of how to define security in the information flow context, the lecture discusses \emph{P-security}, \emph{IP-security}, and \emph{TA-security}.
+
+\newcommand{\purge}{\texttt{purge}}
+
+\begin{definition}[Purge Function]
+    For some set of domains \(E \subseteq D\), a sequence of actions \(\alpha \in A^*\), and policy \(\rightarrowtail\), we define \(\alpha {\upharpoonleft} E\) as the subsequence of actions \(a \in A^*\) from \(\alpha\), where \[\forall i \in [|a|]: \dom(a) \in E.\]
+    In other words, \(\alpha {\upharpoonleft} E\) is \(\alpha\) without actions not owned by some actor in \(E\).
+
+    Moreover we define the \emph{purge function} \(\purge : A^* \times D \rightarrow A^*\) with
+    \[\purge : \alpha, u \mapsto \alpha {\upharpoonleft} \{v \in D \mid v \rightarrowtail u\}.\]
+    We write \(\purge_u(\alpha)\).
+    This is the subsequence of \(\alpha\) owned by some domain from which information may flow to \(u\).
+    \(\purge_u(\alpha)\) contains all actions in \(\alpha\), which \(u\) may directly know of.
+    On important thing to remember in this notion is, that most of the times specify that \(\rightarrowtail\) is reflexive and transitive.
+\end{definition}
+
+Now we can finally define P-security.
+
+\begin{definition}[P-Security]
+    A system \((S, s_0, A, \step, D, O, \obs, \dom)\) is P-secure with respect to a policy \(\rightarrowtail\), iff
+    \[\forall u \in D, s \in S, \alpha_1, \alpha_2 \in A^*: \purge_u(\alpha_1) = \purge_u(\alpha_2) \Rightarrow \obs_u(s \cdot \alpha_1) = \obs_u(s \cdot \alpha_2)\]
+    Informally, this means that \(u\) should always know exactly the same for two different sequences of actions with the same \(\purge_u\).
+
+    P-security of the system is equivalent with
+    \[\forall s \in S, u \in D, \alpha \in A^*: \obs_u(s \cdot \alpha) = \obs_u(S \cdot \purge_u(\alpha)).\]
+\end{definition}
+
+Well now we have a different problem.
+When we want to verify, that a system is P-secure (or later, IP- or TA-secure), we may have a finite amount of state pairs \(|S^2| = |S|^2\), but sequences can be arbitrary long.
+Therefore, we must find a way to find suitable sequence pairs until no change occurs anymore.
