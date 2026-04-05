@@ -73,3 +73,14 @@ Now we can finally define P-security.
 Well now we have a different problem.
 When we want to verify, that a system is P-secure (or later, IP- or TA-secure), we may have a finite amount of state pairs \(|S^2| = |S|^2\), but sequences can be arbitrary long.
 Therefore, we must find a way to find suitable sequence pairs until no change occurs anymore.
+To fix this issue, we define another way to find P-security and prove that this definition is equivalent, and that we can use this definition to verify P-security in polynomial time.
+
+\begin{definition}[Unwinding]
+    An \emph{unwinding} of a system \((S, s_0, A, \step, D, O, \obs, \dom)\) with policy \(\rightarrowtail\) is a collection of relations \((\sim_u)_{u \in D}\) with
+    \begin{IEEEeqnarray*}{r'c'l"s}
+        s \sim_u t & \Rightarrow & \obs_u(s) = \obs_u(t) & (OC) \\
+        s \sim_u t & \Rightarrow & s \cdot a \sim_u t \cdot a & (SC) \\
+        \dom(a) \not\rightarrowtail u & \Rightarrow & s \sim_u s \cdot a & (LR)
+    \end{IEEEeqnarray*}
+    These properties are called \emph{Output Consistency}, \emph{Step Consistency}, and \emph{Left Respect}.
+\end{definition}
