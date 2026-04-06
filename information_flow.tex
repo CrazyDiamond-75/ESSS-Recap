@@ -113,7 +113,7 @@ For this we have to define a new purge function---the \emph{immediate purge} fun
         \end{cases}
     \end{IEEEeqnarray*}
     In other words, this is a subset of the cumulative domain over \(\alpha\), where we require, that there are policies which allow \(u\) to know information of the domain.
-    The important thing to note here, is that we read \(\alpha\) from right to left when evaluating \(\sources(\alpha, u)\), e.g., for policy \(H \rightarrowtail T \rightarrowtail L\) we have \(\sources(thl, L) = \{T, L\}\), because \(\sorces(hl, L) = \{L\}\) and \(H \not\rightarrowtail L\) as the policy is intransitive.
+    The important thing to note here, is that we read \(\alpha\) from right to left when evaluating \(\sources(\alpha, u)\), e.g., for policy \(H \rightarrowtail T \rightarrowtail L\) we have \(\sources(thl, L) = \{T, L\}\), because \(\sources(hl, L) = \{L\}\) and \(H \not\rightarrowtail L\) as the policy is intransitive.
     The set contains only the users whose actions may be forwarded to \(u\), when the entire trace is performed.
     Instead of \(\sources(\cdot, u)\) we also write \(\sources_u(\cdot)\).
 
