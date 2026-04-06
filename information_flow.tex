@@ -43,12 +43,12 @@ To formalize the idea, that information may only flow between allowed actors, we
 \end{definition}
 
 \section{Security Models}
-There are different notions of how to define security in the information flow context, the lecture discusses \emph{P-security}, \emph{IP-security}, and \emph{TA-security}.
+There are different notions of how to define security in the information flow context, the lecture mainly discusses \emph{P-security} and \emph{IP-security}.
 
 \newcommand{\purge}{\texttt{purge}}
 
 \begin{definition}[Purge Function]
-    For some set of domains \(E \subseteq D\), a sequence of actions \(\alpha \in A^*\), and policy \(\rightarrowtail\), we define \(\alpha {\upharpoonleft} E\) as the subsequence of actions \(a \in A^*\) from \(\alpha\), where \[\forall i \in [|a|]: \dom(a) \in E.\]
+    For some set of domains \(E \subseteq D\), a sequence of actions \(\alpha \in A^*\), and policy \(\rightarrowtail\), we define \(\alpha {\upharpoonleft} E\) as the subsequence of actions \(\beta \in A^*\) from \(\alpha\), where \[\forall i \in [|\beta|]: \dom(\beta_i) \in E.\]
     In other words, \(\alpha {\upharpoonleft} E\) is \(\alpha\) without actions not owned by some actor in \(E\).
 
     Moreover we define the \emph{purge function} \(\purge : A^* \times D \rightarrow A^*\) with
@@ -82,5 +82,74 @@ To fix this issue, we define another way to find P-security and prove that this 
         s \sim_u t & \Rightarrow & s \cdot a \sim_u t \cdot a & (SC) \\
         \dom(a) \not\rightarrowtail u & \Rightarrow & s \sim_u s \cdot a & (LR)
     \end{IEEEeqnarray*}
-    These properties are called \emph{Output Consistency}, \emph{Step Consistency}, and \emph{Left Respect}.
+    These properties are called \emph{output consistency}, \emph{step consistency}, and \emph{left respect}.
+\end{definition}
+
+To construct an unwinding on a system, we can just add the trivial reflexive cases, and then close the relation under transitivity, symmetry, left respect, and step consistency until nothing changes.
+Finally, to verify that we have indeed found an unwinding, we check for output consistency.
+
+Now we look at IP-security, a security measure, where we don't require transitivity.
+Instead, we accept intransitive noninterference.
+
+\begin{definition}[Intransitive Policies]
+    For IP-security, we may specify \emph{intransitive policies}, such as \(H \rightarrowtail T \rightarrowtail L\), for \(H, T, L \in D\), where we allow \(T\) to transmit some information from \(H\) to \(L\), but \(L\) may not find out about \(H\)'s actions directly.
+\end{definition}
+
+For this we have to define a new purge function---the \emph{immediate purge} function.
+
+\newcommand{\sources}{\texttt{sources}}
+\newcommand{\ipurge}{\texttt{ipurge}}
+
+\begin{definition}[Immediate Purge Function]
+    To define the purge function used in IP-security, we firstly have to define another function, which is used by the former.
+    We define the \(\sources\) function as the set of agents which may interfere with some user in some sequence.
+    It is similar to a cumulative domain, but a bit more complex.
+    For all \(u \in D, a \in A, \alpha \in A^*\), we define the \(\sources : A^* \times D \rightarrow \mathcal P(D)\) function with
+    \begin{IEEEeqnarray*}{r'c'l}
+        \epsilon, u & \mapsto & \{u\} \\
+        a\alpha, u & \mapsto &
+        \begin{cases}
+            \sources(\alpha, u) \cup \{\dom(a)\} & \exists v \in \sources(\alpha, u): \dom(a) \rightarrowtail v, \\ \sources(\alpha, u) & \text{else.}
+        \end{cases}
+    \end{IEEEeqnarray*}
+    In other words, this is a subset of the cumulative domain over \(\alpha\), where we require, that there are policies which allow \(u\) to know information of the domain.
+    The important thing to note here, is that we read \(\alpha\) from right to left when evaluating \(\sources(\alpha, u)\), e.g., for policy \(H \rightarrowtail T \rightarrowtail L\) we have \(\sources(thl, L) = \{T, L\}\), because \(\sorces(hl, L) = \{L\}\) and \(H \not\rightarrowtail L\) as the policy is intransitive.
+    The set contains only the users whose actions may be forwarded to \(u\), when the entire trace is performed.
+    Instead of \(\sources(\cdot, u)\) we also write \(\sources_u(\cdot)\).
+
+    Now we can finally define the immediate purge function \(\ipurge : A^* \times D \rightarrow A^*\).
+    It is defined inductively for all \(u \in D, a \in A, \alpha \in A^*\) with
+    \begin{IEEEeqnarray*}{r'c'l}
+        \epsilon, u & \mapsto & \epsilon \\
+        a\alpha, u & \mapsto &
+        \begin{cases}
+            a\ipurge(\alpha, u) & \dom(a) \in \sources(a\alpha, u), \\
+            \ipurge(\alpha, u) & \text{else.}
+        \end{cases}
+    \end{IEEEeqnarray*}
+    In other words, the immediate purge function looks at the current trace of \(\alpha\), i.e. its current source, and keeps the action \(a\) iff it is owned by an actor \(u\) currently knows about.
+
+    We also allow \(\ipurge(\cdot, u)\) to be written as \(\ipurge_u(\cdot)\).
+\end{definition}
+
+\begin{definition}[IP-Security]
+    Similarly to before, we define a system IP-secure with respect to intransitive policy \(\rightarrowtail\) iff
+    \[\forall u \in D, s \in S: \ipurge_u(\alpha_1) = \ipurge_u(\alpha_2) \Rightarrow \obs_u(s \cdot \alpha_1) = \obs_u(s \cdot \alpha_2).\]
+    This is pretty similar to P-security---this scheme is even used for TA-security, we just replace the relevant purge function.
+\end{definition}
+
+As the immediate purge function is \emph{stricter} than the normal purge function, we see that P-security implies IP-security.
+This also goes for TA-security, which this lecture does not formally define.
+
+We can again define an unwinding for IP-security and decide if there is one in polynomial time, proving or refuting IP-security.
+
+\begin{definition}[IP-Unwinding]
+    An \emph{IP-unwinding} of a system \((S, s_0, A, \step, D, O, \obs, \dom)\) with intransitive policy \(\rightarrowtail\) is a family of equivalence relations \((\sim_u^v)_{u,v \in D}\) on \(S\), such that
+    \begin{IEEEeqnarray*}{r'c'l"s}
+        s \sim_u^v t & \Rightarrow & \obs_u(s) = \obs_u(t) & (IP-OC) \\
+        s \sim_u^v t \wedge v \not\rightarrowtail \dom(a) & \Rightarrow & s \cdot a \sim_u^v t \cdot a & (IP-SC) \\
+        v \not\rightarrowtail u \wedge \dom(a) = v & \Rightarrow & s \sim_u s \cdot a & (IP-LR)
+    \end{IEEEeqnarray*}
+    In this family, some \(v\) is known to perform to \(u\) potentially secret operations.
+    \(u\) is a low-level observer.
 \end{definition}
